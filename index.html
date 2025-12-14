@@ -53,9 +53,11 @@
 
         <!-- SOS Button -->
         <div class="flex justify-center mb-8">
-            <button onclick="sendSOS()" class="pulse-sos bg-pink-500 text-white w-40 h-40 rounded-full text-xl font-bold shadow-xl">
-                SOS
-            </button>
+            <button id="sosBtn"
+        class="pulse-sos bg-pink-500 text-white w-40 h-40 rounded-full text-xl font-bold shadow-xl">
+    SOS
+</button>
+
         </div>
 
         <!-- Quick Actions -->
@@ -63,39 +65,88 @@
             <button class="bg-white rounded-2xl p-4 shadow text-purple-600">📍 Share Location</button>
             <button class="bg-white rounded-2xl p-4 shadow text-purple-600">🚶 Walk With Me</button>
             <button class="bg-white rounded-2xl p-4 shadow text-purple-600">📞 Emergency Call</button>
-            <button class="bg-white rounded-2xl p-4 shadow text-purple-600">⚙️ Settings</button>
+            <button onclick="addContacts()" class="bg-white rounded-2xl p-4 shadow text-purple-600">
+    ⚙️ Settings
+</button>
+
         </div>
 
     </div>
 
-    <script>
-        function sendSOS() {
-            if (!navigator.geolocation) {
-                alert("Geolocation is not supported on this device.");
-                return;
+<script>
+let tapCount = 0;
+let tapTimer = null;
+
+const sosBtn = document.getElementById("sosBtn");
+
+sosBtn.addEventListener("click", () => {
+    tapCount++;
+
+    if (tapCount === 1) {
+        tapTimer = setTimeout(() => {
+            sendSOS("normal"); → single tap
+            tapCount = 0;
+        }, 1200);
+    }
+
+    if (tapCount === 3) {
+        clearTimeout(tapTimer);
+        sendSOS("strong"); → triple tap
+        tapCount = 0;
+    }
+});
+
+function sendSOS(type) {
+    if (!navigator.geolocation) {
+        alert("Geolocation not supported");
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+        (position) => {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+            const locationLink = `https://www.google.com/maps?q=${lat},${lon}`;
+
+            let message = "";
+
+            if (type === "strong") {
+                message = `🚨🚨 EMERGENCY ALERT 🚨🚨
+PLEASE HELP IMMEDIATELY!
+📍 Live location:
+${locationLink}`;
+            } else {
+                message = `🚨 SOS ALERT 🚨
+I need help.
+📍 Location:
+${locationLink}`;
             }
 
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const lat = position.coords.latitude;
-                    const lon = position.coords.longitude;
+            const contacts = JSON.parse(localStorage.getItem("guardianContacts"))
+                              || ["918078416898"];
 
-                    const locationLink = `https://www.google.com/maps?q=${lat},${lon}`;
+            contacts.forEach(number => {
+                window.open(
+                  `https://wa.me/${number}?text=${encodeURIComponent(message)}`,
+                  "_blank"
+                );
+            });
+        },
+        () => alert("Enable GPS to send SOS")
+    );
+}
+    function addContacts() {
+    const input = prompt("Enter emergency numbers (comma separated):\nExample: 919876543210,918888888888");
+    if (!input) return;
 
-                    const message = `🚨 SOS ALERT 🚨\nI need help immediately.\n📍 My live location:\n${locationLink}`;
+    const numbers = input.split(",").map(n => n.trim());
+    localStorage.setItem("guardianContacts", JSON.stringify(numbers));
+    alert("Emergency contacts saved 💜");
+}
 
-                    const phoneNumber = "918078416898"; // replace if needed
-                    const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
-
-                    window.location.href = whatsappURL;
-                },
-                () => {
-                    alert("Unable to fetch location. Please enable GPS.");
-                }
-            );
-        }
-    </script>
+</script>
 
 </body>
 </html>
+
 
