@@ -83,14 +83,14 @@ sosBtn.addEventListener("click", () => {
 
     if (tapCount === 1) {
         tapTimer = setTimeout(() => {
-            sendSOS("normal"); → single tap
+            sendSOS("normal"); // single tap
             tapCount = 0;
         }, 1200);
     }
 
     if (tapCount === 3) {
         clearTimeout(tapTimer);
-        sendSOS("strong"); → triple tap
+        sendSOS("strong"); // triple tap
         tapCount = 0;
     }
 });
@@ -121,32 +121,41 @@ I need help.
 ${locationLink}`;
             }
 
-            const contacts = JSON.parse(localStorage.getItem("guardianContacts"))
-                              || ["918078416898"];
+            const contacts =
+                JSON.parse(localStorage.getItem("guardianContacts")) ||
+                ["918078416898"];
 
             contacts.forEach(number => {
                 window.open(
-                  `https://wa.me/${number}?text=${encodeURIComponent(message)}`,
-                  "_blank"
+                    `https://wa.me/${number}?text=${encodeURIComponent(message)}`,
+                    "_blank"
                 );
             });
         },
         () => alert("Enable GPS to send SOS")
     );
 }
-    function addContacts() {
-    const input = prompt("Enter emergency numbers (comma separated):\nExample: 919876543210,918888888888");
+
+function addContacts() {
+    const input = prompt(
+        "Enter emergency numbers (comma separated):\nExample: 919876543210,918888888888"
+    );
+
     if (!input) return;
 
-    const numbers = input.split(",").map(n => n.trim());
+    const numbers = input
+        .split(",")
+        .map(n => n.trim())
+        .filter(n => n.length >= 10);
+
     localStorage.setItem("guardianContacts", JSON.stringify(numbers));
     alert("Emergency contacts saved 💜");
 }
-
 </script>
 
 </body>
 </html>
+
 
 
 
