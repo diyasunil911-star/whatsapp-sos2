@@ -62,17 +62,34 @@
         </div>
 
         <!-- Quick Actions -->
-        <div class="grid grid-cols-2 gap-4">
-            <button class="bg-white rounded-2xl p-4 shadow text-purple-600">📍 Share Location</button>
-            <button class="bg-white rounded-2xl p-4 shadow text-purple-600">🚶 Walk With Me</button>
-            <button class="bg-white rounded-2xl p-4 shadow text-purple-600">📞 Emergency Call</button>
-            <button onclick="addContacts()" class="bg-white rounded-2xl p-4 shadow text-purple-600">
-    ⚙️ Settings
-</button>
+        <!-- Quick Actions -->
+<div class="grid grid-cols-2 gap-4">
 
-        </div>
+    <button onclick="openFakeCall()" class="bg-white rounded-2xl p-4 shadow text-purple-600">
+        📱 Fake Call
+    </button>
+
+    <button onclick="playSiren()" class="bg-white rounded-2xl p-4 shadow text-purple-600">
+        🚨 Siren
+    </button>
+
+    <button onclick="emergencyCall()" class="bg-white rounded-2xl p-4 shadow text-purple-600">
+        📞 Emergency Call
+    </button>
+
+    <button onclick="addContacts()" class="bg-white rounded-2xl p-4 shadow text-purple-600">
+        ⚙️ Settings
+    </button>
+
+</div>
+
 
     </div>
+
+<audio id="sirenSound" loop>
+    <source src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg" type="audio/ogg">
+</audio>
+
 
 <script>
 let tapCount = 0;
@@ -153,10 +170,44 @@ function addContacts() {
     localStorage.setItem("guardianContacts", JSON.stringify(numbers));
     alert("Emergency contacts saved 💜");
 }
+
+    // 🔊 Siren toggle
+let sirenPlaying = false;
+
+function playSiren() {
+    const siren = document.getElementById("sirenSound");
+
+    if (!sirenPlaying) {
+        siren.play();
+        sirenPlaying = true;
+        alert("🚨 Siren ON");
+    } else {
+        siren.pause();
+        siren.currentTime = 0;
+        sirenPlaying = false;
+        alert("🛑 Siren OFF");
+    }
+}
+
+// 📞 Emergency Call
+function emergencyCall() {
+    const contacts =
+        JSON.parse(localStorage.getItem("guardianContacts")) ||
+        ["918078416898"];
+
+    window.location.href = `tel:${contacts[0]}`;
+}
+
+// 📱 Open Fake Call Page
+function openFakeCall() {
+    window.location.href = "fake-call.html";
+}
+
 </script>
 
 </body>
 </html>
+
 
 
 
