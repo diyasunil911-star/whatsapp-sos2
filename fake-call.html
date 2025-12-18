@@ -15,7 +15,8 @@ body {
 
 <body class="min-h-screen flex items-center justify-center text-white">
 
-<audio id="ringtone" loop>
+<audio id="ringtone" loop preload="auto">
+
     <source src="https://assets.mixkit.co/active_storage/sfx/1358/1358-preview.mp3" type="audio/mpeg">
 </audio>
 
@@ -47,14 +48,27 @@ const timer = setInterval(() => {
         clearInterval(timer);
         document.getElementById("waiting").classList.add("hidden");
         document.getElementById("callScreen").classList.remove("hidden");
-        ringtone.play();
+        ringtone.volume = 1.0;
+ringtone.play();
+
+if (navigator.vibrate) {
+    navigator.vibrate([500, 300, 500, 300]);
+}
+
     }
 }, 1000);
 
 function acceptCall() {
     ringtone.pause();
-    alert("Connected… keep acting 💜");
+    document.body.innerHTML = `
+        <div class="min-h-screen bg-black text-white flex flex-col items-center justify-center">
+            <h1 class="text-3xl mb-2">Mom ❤️</h1>
+            <p class="text-gray-400">Call in progress</p>
+            <p class="mt-6 text-sm">Stay safe. I’m here.</p>
+        </div>
+    `;
 }
+
 
 function declineCall() {
     ringtone.pause();
