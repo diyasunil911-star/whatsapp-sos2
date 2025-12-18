@@ -1,143 +1,85 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Guardian – Women Safety</title>
-<script src="https://cdn.tailwindcss.com"></script>
-
-<style>
-body {
-    background: radial-gradient(circle at top, #fce7f3, #ede9fe);
-    font-family: 'Inter', sans-serif;
-}
-.pulse-sos {
-    animation: pulseGlow 2s infinite;
-}
-@keyframes pulseGlow {
-    0% { box-shadow: 0 0 0 0 rgba(236,72,153,0.6); }
-    70% { box-shadow: 0 0 0 25px rgba(236,72,153,0); }
-    100% { box-shadow: 0 0 0 0 rgba(236,72,153,0); }
-}
-</style>
-</head>
-
-<body class="min-h-screen flex items-center justify-center">
-
-<div class="w-full max-w-sm px-6">
-
-<!-- LOGO -->
-<div class="flex flex-col items-center mb-8">
-<div class="w-24 h-24 rounded-full shadow-lg mb-3"
-style="background-image:url('data:image/png;base64,PUT_BASE64_HERE');
-background-size:cover;background-position:center;"></div>
-
-<h1 class="text-2xl font-semibold text-purple-700">Guardian</h1>
-<p class="text-sm text-purple-500">Your invisible safety bubble</p>
-</div>
-
-<!-- SOS -->
-<div class="flex justify-center mb-8">
-<button id="sosBtn"
-class="pulse-sos bg-pink-500 text-white w-40 h-40 rounded-full text-xl font-bold shadow-xl">
-SOS
-</button>
-</div>
-
-<!-- ACTIONS -->
-<div class="grid grid-cols-2 gap-4">
-
-<button onclick="openFakeCall()" class="bg-white rounded-2xl p-4 shadow text-purple-600">
-📱 Fake Call
-</button>
-
-<button onclick="toggleSiren()" class="bg-white rounded-2xl p-4 shadow text-purple-600">
-🚨 Police Siren
-</button>
-
-<button onclick="emergencyCall()" class="bg-white rounded-2xl p-4 shadow text-purple-600">
-☎️ Emergency Call
-</button>
-
-<button onclick="openSettings()" class="bg-white rounded-2xl p-4 shadow text-purple-600">
-⚙️ Settings
-</button>
-
-</div>
-</div>
-
-<!-- SIREN AUDIO -->
-<audio id="siren" loop>
-<source src="https://assets.mixkit.co/active_storage/sfx/1995/1995-preview.mp3" type="audio/mpeg">
-</audio>
-
 <script>
-// -------- SOS TAP LOGIC --------
+/* ---------- SOS TAP LOGIC ---------- */
 let tapCount = 0;
 let tapTimer = null;
-
-let tapCount = 0;
 
 document.getElementById("sosBtn").addEventListener("click", () => {
     tapCount++;
 
     if (tapCount === 1) {
-        setTimeout(() => {
-            if (tapCount === 1) {
-                sendSOS("normal"); // single tap
-            }
+        tapTimer = setTimeout(() => {
+            sendSOS("normal"); // single tap
             tapCount = 0;
-        }, 800);
+        }, 1000);
     }
 
     if (tapCount === 3) {
+        clearTimeout(tapTimer);
         sendSOS("strong"); // triple tap
         tapCount = 0;
     }
 });
 
-
+/* ---------- SEND SOS ---------- */
 function sendSOS(type) {
-    function sendSOS(type) {
-    alert("SOS Triggered. Fetching location...");
-    navigator.geolocation.getCurrentPosition(pos => {
+    if (!navigator.geolocation) {
+        alert("Geolocation not supported");
+        return;
+    }
 
-navigator.geolocation.getCurrentPosition(pos => {
-const link = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
-const msg = type === "strong"
-? `🚨🚨 EMERGENCY ALERT 🚨🚨\nHELP IMMEDIATELY!\n${link}`
-: `🚨 SOS ALERT 🚨\nI need help.\n${link}`;
+    alert("📍 Fetching location…");
 
-const contacts = JSON.parse(localStorage.getItem("guardianContacts")) || ["918078416898"];
-window.location.href =
-  `https://wa.me/${contacts[0]}?text=${encodeURIComponent(msg)}`;
+    navigator.geolocation.getCurrentPosition(
+        (pos) => {
+            const lat = pos.coords.latitude;
+            const lon = pos.coords.longitude;
 
-});
+            const link = `https://www.google.com/maps?q=${lat},${lon}`;
+
+            const message =
+                type === "strong"
+                ? `🚨🚨 EMERGENCY ALERT 🚨🚨\nHELP IMMEDIATELY!\n📍 ${link}`
+                : `🚨 SOS ALERT 🚨\nI need help.\n📍 ${link}`;
+
+            const contacts =
+                JSON.parse(localStorage.getItem("guardianContacts")) ||
+                ["918078416898"];
+
+            window.location.href =
+                `https://wa.me/${contacts[0]}?text=${encodeURIComponent(message)}`;
+        },
+        () => alert("Please enable GPS")
+    );
 }
 
-// -------- SIREN --------
+/* ---------- POLICE SIREN ---------- */
 let sirenPlaying = false;
 function toggleSiren() {
-const siren = document.getElementById("siren");
-if (!sirenPlaying) {
-siren.volume = 1;
-siren.play();
-navigator.vibrate && navigator.vibrate([500,300,500]);
-sirenPlaying = true;
-} else {
-siren.pause();
-siren.currentTime = 0;
-navigator.vibrate && navigator.vibrate(0);
-sirenPlaying = false;
-}
+    const siren = document.getElementById("siren");
+
+    if (!sirenPlaying) {
+        siren.volume = 1;
+        siren.play();
+        navigator.vibrate && navigator.vibrate([500, 300, 500, 300]);
+        sirenPlaying = true;
+    } else {
+        siren.pause();
+        siren.currentTime = 0;
+        navigator.vibrate && navigator.vibrate(0);
+        sirenPlaying = false;
+    }
 }
 
-// -------- NAV --------
-function openFakeCall() { window.location.href = "fake-call.html"; }
-function openSettings() { window.location.href = "settings.html"; }
-function emergencyCall() { window.location.href = "tel:112"; }
+/* ---------- NAVIGATION ---------- */
+function openFakeCall() {
+    window.location.href = "fake-call.html";
+}
 
+function openSettings() {
+    window.location.href = "settings.html";
+}
+
+function emergencyCall() {
+    window.location.href = "tel:112";
+}
 </script>
-</body>
-</html>
-
