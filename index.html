@@ -69,9 +69,10 @@ class="bg-white rounded-2xl p-4 shadow text-purple-600 text-center">
 </div>
 
 <!-- SIREN AUDIO -->
-<audio id="siren" loop>
-<source src="https://assets.mixkit.co/active_storage/sfx/1995/1995-preview.mp3" type="audio/mpeg">
+<audio id="siren" preload="auto" loop>
+<source src="https://assets.mixkit.co/active_storage/sfx/2213/2213-preview.mp3" type="audio/mpeg">
 </audio>
+
 
 <script>
 // -------- SOS TAP LOGIC --------
@@ -108,19 +109,16 @@ contacts.forEach(n => window.open(`https://wa.me/${n}?text=${encodeURIComponent(
 // -------- SIREN --------
 let sirenPlaying = false;
 
+let sirenPlaying = false;
+
 function toggleSiren() {
     const siren = document.getElementById("siren");
-
-    // Required for mobile browsers
-    siren.muted = false;
-    siren.volume = 1.0;
+    siren.volume = 1;
 
     if (!sirenPlaying) {
         siren.play().then(() => {
             sirenPlaying = true;
-            if (navigator.vibrate) {
-                navigator.vibrate([500, 300, 500, 300]);
-            }
+            navigator.vibrate && navigator.vibrate([500,300,500,300]);
         }).catch(() => {
             alert("Tap again to allow siren 🔊");
         });
@@ -128,17 +126,29 @@ function toggleSiren() {
         siren.pause();
         siren.currentTime = 0;
         sirenPlaying = false;
-        if (navigator.vibrate) navigator.vibrate(0);
+        navigator.vibrate && navigator.vibrate(0);
     }
 }
+
 
 
 // -------- NAV --------
 function openFakeCall() { window.location.href = "fake-call.html"; }
 function openSettings() { window.location.href = "settings.html"; }
-function emergencyCall() { window.location.href = "tel:112"; }
+function emergencyCall() {
+    const contacts =
+        JSON.parse(localStorage.getItem("guardianContacts")) || [];
+
+    if (contacts.length > 0) {
+        window.location.href = `tel:${contacts[0]}`;
+    } else {
+        window.location.href = "tel:112";
+    }
+}
+
 
 </script>
 </body>
 </html>
+
 
