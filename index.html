@@ -93,6 +93,9 @@
 <audio id="sirenSound" loop>
     <source src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg" type="audio/ogg">
 </audio>
+<audio id="siren" loop>
+  <source src="https://assets.mixkit.co/active_storage/sfx/1995/1995-preview.mp3" type="audio/mpeg">
+</audio>
 
 
 <script>
@@ -262,10 +265,16 @@ function toggleSiren() {
         }
     }
 }
+
+    function makeEmergencyCall() {
+    window.location.href = "tel:112";
+}
+
 </script>
 
 </body>
 </html>
+
 
 
 
