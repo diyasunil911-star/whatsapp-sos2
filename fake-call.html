@@ -55,7 +55,9 @@ const timer = setInterval(() => {
         document.getElementById("waiting").classList.add("hidden");
         document.getElementById("callScreen").classList.remove("hidden");
         ringtone.volume = 1.0;
-ringtone.play();
+        ringtone.play();
+
+
 
 if (navigator.vibrate) {
     navigator.vibrate([500, 300, 500, 300]);
