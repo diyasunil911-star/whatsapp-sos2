@@ -68,11 +68,6 @@ class="bg-white rounded-2xl p-4 shadow text-purple-600 text-center">
 </div>
 </div>
 
-<!-- SIREN AUDIO -->
-<audio id="siren" preload="auto" loop>
-<source src="https://assets.mixkit.co/active_storage/sfx/2213/2213-preview.mp3" type="audio/mpeg">
-</audio>
-
 
 <script>
 // -------- SOS TAP LOGIC --------
@@ -109,26 +104,7 @@ contacts.forEach(n => window.open(`https://wa.me/${n}?text=${encodeURIComponent(
 // -------- SIREN --------
 let sirenPlaying = false;
 
-let sirenPlaying = false;
 
-function toggleSiren() {
-    const siren = document.getElementById("siren");
-    siren.volume = 1;
-
-    if (!sirenPlaying) {
-        siren.play().then(() => {
-            sirenPlaying = true;
-            navigator.vibrate && navigator.vibrate([500,300,500,300]);
-        }).catch(() => {
-            alert("Tap again to allow siren 🔊");
-        });
-    } else {
-        siren.pause();
-        siren.currentTime = 0;
-        sirenPlaying = false;
-        navigator.vibrate && navigator.vibrate(0);
-    }
-}
 
 
 
@@ -145,10 +121,40 @@ function emergencyCall() {
         window.location.href = "tel:112";
     }
 }
+<script>
+let siren = null;
+let sirenPlaying = false;
+
+function toggleSiren() {
+    if (!siren) {
+        siren = new Audio("police-siren.mp3");
+        siren.loop = true;
+    }
+
+    if (!sirenPlaying) {
+        siren.volume = 1.0;
+        siren.play();
+        sirenPlaying = true;
+
+        if (navigator.vibrate) {
+            navigator.vibrate([600, 300, 600, 300]);
+        }
+    } else {
+        siren.pause();
+        siren.currentTime = 0;
+        sirenPlaying = false;
+
+        if (navigator.vibrate) {
+            navigator.vibrate(0);
+        }
+    }
+}
+</script>
 
 
 </script>
 </body>
 </html>
+
 
 
