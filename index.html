@@ -81,6 +81,21 @@
     <source src="https://assets.mixkit.co/active_storage/sfx/1995/1995-preview.mp3" type="audio/mpeg">
 </audio>
 
+    // 🔓 Unlock audio on first user interaction
+document.body.addEventListener("click", unlockAudio, { once: true });
+
+function unlockAudio() {
+    const siren = document.getElementById("siren");
+    if (siren) {
+        siren.volume = 0;
+        siren.play().then(() => {
+            siren.pause();
+            siren.currentTime = 0;
+            siren.volume = 1;
+        }).catch(() => {});
+    }
+}
+
 <script>
 /* =========================
    SOS SINGLE / TRIPLE TAP
@@ -112,29 +127,27 @@ function sendSOS(type) {
         alert("Geolocation not supported");
         return;
     }
-
+document.getElementById("sosBtn").onclick = () => {
     navigator.geolocation.getCurrentPosition(
         (position) => {
             const lat = position.coords.latitude;
             const lon = position.coords.longitude;
-            const locationLink = `https://www.google.com/maps?q=${lat},${lon}`;
 
-            let message =
-                type === "strong"
-                ? `🚨🚨 EMERGENCY ALERT 🚨🚨\nPLEASE HELP IMMEDIATELY!\n📍 ${locationLink}`
-                : `🚨 SOS ALERT 🚨\nI need help.\n📍 ${locationLink}`;
+            const msg = `🚨 SOS ALERT 🚨
+I need help immediately.
+📍 https://www.google.com/maps?q=${lat},${lon}`;
 
             const contacts =
                 JSON.parse(localStorage.getItem("guardianContacts")) ||
                 ["918078416898"];
 
-            // WhatsApp allows only ONE redirect
             window.location.href =
-                `https://wa.me/${contacts[0]}?text=${encodeURIComponent(message)}`;
+                `https://wa.me/${contacts[0]}?text=${encodeURIComponent(msg)}`;
         },
-        () => alert("Enable GPS to send SOS")
+        () => alert("Location permission denied")
     );
-}
+};
+
 
 /* =========================
    POLICE SIREN
@@ -145,13 +158,14 @@ let sirenPlaying = false;
 function toggleSiren() {
     const siren = document.getElementById("siren");
 
+    siren.volume = 1.0;
+
     if (!sirenPlaying) {
-        siren.volume = 1.0;
-        siren.play();
+        siren.play().catch(err => alert("Tap screen once to enable sound"));
         sirenPlaying = true;
 
         if (navigator.vibrate) {
-            navigator.vibrate([500, 300, 500, 300]);
+            navigator.vibrate([400, 200, 400, 200]);
         }
     } else {
         siren.pause();
@@ -163,6 +177,7 @@ function toggleSiren() {
         }
     }
 }
+
 
 /* =========================
    NAVIGATION
@@ -187,3 +202,4 @@ function emergencyCall() {
 
 </body>
 </html>
+
