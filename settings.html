@@ -13,6 +13,11 @@
 <input id="numbers"
        class="w-full p-3 rounded-xl border"
        placeholder="Comma separated numbers"/>
+       
+<label class="block mt-4 mb-2">Fake Caller Name</label>
+<input id="callerName"
+       class="w-full p-3 rounded-xl border"
+       placeholder="Eg: Mom, Friend, Police"/>
 
 <button onclick="saveSettings()"
         class="mt-4 bg-pink-500 text-white p-3 rounded-xl w-full">
@@ -23,10 +28,17 @@ Save
 function saveSettings() {
     const nums = document.getElementById("numbers").value
         .split(",")
-        .map(n => n.trim());
+        .map(n => n.trim())
+        .filter(n => n.length >= 10);
+
+    const caller = document.getElementById("callerName").value || "Mom";
+
     localStorage.setItem("guardianContacts", JSON.stringify(nums));
-    alert("Saved 💜");
+    localStorage.setItem("guardianCallerName", caller);
+
+    alert("Settings saved 💜");
 }
+
 </script>
 
 </body>
