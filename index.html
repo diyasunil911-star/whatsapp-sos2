@@ -76,22 +76,32 @@ SOS
 let tapCount = 0;
 let tapTimer = null;
 
+let tapCount = 0;
+
 document.getElementById("sosBtn").addEventListener("click", () => {
-tapCount++;
-if (tapCount === 1) {
-tapTimer = setTimeout(() => {
-sendSOS("normal");
-tapCount = 0;
-}, 1200);
-}
-if (tapCount === 3) {
-clearTimeout(tapTimer);
-sendSOS("strong");
-tapCount = 0;
-}
+    tapCount++;
+
+    if (tapCount === 1) {
+        setTimeout(() => {
+            if (tapCount === 1) {
+                sendSOS("normal"); // single tap
+            }
+            tapCount = 0;
+        }, 800);
+    }
+
+    if (tapCount === 3) {
+        sendSOS("strong"); // triple tap
+        tapCount = 0;
+    }
 });
 
+
 function sendSOS(type) {
+    function sendSOS(type) {
+    alert("SOS Triggered. Fetching location...");
+    navigator.geolocation.getCurrentPosition(pos => {
+
 navigator.geolocation.getCurrentPosition(pos => {
 const link = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
 const msg = type === "strong"
@@ -99,7 +109,9 @@ const msg = type === "strong"
 : `🚨 SOS ALERT 🚨\nI need help.\n${link}`;
 
 const contacts = JSON.parse(localStorage.getItem("guardianContacts")) || ["918078416898"];
-contacts.forEach(n => window.open(`https://wa.me/${n}?text=${encodeURIComponent(msg)}`,"_blank"));
+window.location.href =
+  `https://wa.me/${contacts[0]}?text=${encodeURIComponent(msg)}`;
+
 });
 }
 
@@ -128,3 +140,4 @@ function emergencyCall() { window.location.href = "tel:112"; }
 </script>
 </body>
 </html>
+
