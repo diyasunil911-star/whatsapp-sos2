@@ -59,9 +59,11 @@ SOS
 ☎️ Emergency Call
 </button>
 
-<button onclick="openSettings()" class="bg-white rounded-2xl p-4 shadow text-purple-600">
+<a href="settings.html"
+class="bg-white rounded-2xl p-4 shadow text-purple-600 text-center">
 ⚙️ Settings
-</button>
+</a>
+
 
 </div>
 </div>
@@ -105,20 +107,31 @@ contacts.forEach(n => window.open(`https://wa.me/${n}?text=${encodeURIComponent(
 
 // -------- SIREN --------
 let sirenPlaying = false;
+
 function toggleSiren() {
-const siren = document.getElementById("siren");
-if (!sirenPlaying) {
-siren.volume = 1;
-siren.play();
-navigator.vibrate && navigator.vibrate([500,300,500]);
-sirenPlaying = true;
-} else {
-siren.pause();
-siren.currentTime = 0;
-navigator.vibrate && navigator.vibrate(0);
-sirenPlaying = false;
+    const siren = document.getElementById("siren");
+
+    // Required for mobile browsers
+    siren.muted = false;
+    siren.volume = 1.0;
+
+    if (!sirenPlaying) {
+        siren.play().then(() => {
+            sirenPlaying = true;
+            if (navigator.vibrate) {
+                navigator.vibrate([500, 300, 500, 300]);
+            }
+        }).catch(() => {
+            alert("Tap again to allow siren 🔊");
+        });
+    } else {
+        siren.pause();
+        siren.currentTime = 0;
+        sirenPlaying = false;
+        if (navigator.vibrate) navigator.vibrate(0);
+    }
 }
-}
+
 
 // -------- NAV --------
 function openFakeCall() { window.location.href = "fake-call.html"; }
@@ -128,3 +141,4 @@ function emergencyCall() { window.location.href = "tel:112"; }
 </script>
 </body>
 </html>
+
