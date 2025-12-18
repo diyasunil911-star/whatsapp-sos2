@@ -65,19 +65,23 @@
         <!-- Quick Actions -->
 <div class="grid grid-cols-2 gap-4">
 
-    <button onclick="openFakeCall()" class="bg-white rounded-2xl p-4 shadow text-purple-600">
+    <button onclick="openFakeCall()"
+        class="bg-white rounded-2xl p-4 shadow text-purple-600">
         📱 Fake Call
     </button>
 
-    <button onclick="playSiren()" class="bg-white rounded-2xl p-4 shadow text-purple-600">
-        🚨 Siren
+    <button onclick="toggleSiren()"
+        class="bg-white rounded-2xl p-4 shadow text-purple-600">
+        🚨 Police Siren
     </button>
 
-    <button onclick="emergencyCall()" class="bg-white rounded-2xl p-4 shadow text-purple-600">
-        📞 Emergency Call
+    <button onclick="emergencyCall()"
+        class="bg-white rounded-2xl p-4 shadow text-purple-600">
+        ☎️ Emergency Call
     </button>
 
-    <button onclick="addContacts()" class="bg-white rounded-2xl p-4 shadow text-purple-600">
+    <button onclick="openSettings()"
+        class="bg-white rounded-2xl p-4 shadow text-purple-600">
         ⚙️ Settings
     </button>
 
@@ -189,6 +193,13 @@ function playSiren() {
     }
 }
 
+function playSiren() {
+    const siren = document.getElementById("siren");
+    siren.currentTime = 0;
+    siren.play();
+}
+
+
 // 📞 Emergency Call
 function emergencyCall() {
     const contacts =
@@ -204,9 +215,58 @@ function openFakeCall() {
 }
 
 </script>
+<audio id="siren">
+    <source src="https://assets.mixkit.co/active_storage/sfx/1714/1714-preview.mp3" type="audio/mpeg">
+</audio>
+<script>
+/* ---------- Fake Call ---------- */
+function openFakeCall() {
+    window.location.href = "fake-call.html";
+}
+
+/* ---------- Emergency Call ---------- */
+function emergencyCall() {
+    window.location.href = "tel:112";
+}
+
+/* ---------- Settings ---------- */
+function openSettings() {
+    window.location.href = "settings.html";
+}
+
+/* ---------- Police Siren ---------- */
+let siren;
+let sirenPlaying = false;
+
+function toggleSiren() {
+    if (!siren) {
+        siren = new Audio("police-siren.mp3");
+        siren.loop = true;
+    }
+
+    if (!sirenPlaying) {
+        siren.volume = 1.0;
+        siren.play();
+        sirenPlaying = true;
+
+        if (navigator.vibrate) {
+            navigator.vibrate([500, 300, 500, 300]);
+        }
+    } else {
+        siren.pause();
+        siren.currentTime = 0;
+        sirenPlaying = false;
+
+        if (navigator.vibrate) {
+            navigator.vibrate(0);
+        }
+    }
+}
+</script>
 
 </body>
 </html>
+
 
 
 
